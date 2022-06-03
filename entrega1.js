@@ -305,7 +305,8 @@ const createMedics=(medicsTotal,currentIndex,medicsArray) =>{
     let anioSelect =document.getElementById("selectedYear").value
     if(mesSelect === "-1" && anioSelect === "-1"){
         let month =[];
-        document.getElementById("continueBtn").addEventListener("click",generateMonth(document.getElementById("selectedMonth").value,document.getElementById("selectedYear").value,month));
+        console.log(mesSelect);
+        document.getElementById("continueBtn").addEventListener("click",()=>generateMonth(document.getElementById("selectedMonth").value,document.getElementById("selectedYear").value,month));
         console.log(month);
     }
     // month.forEach(day => {
