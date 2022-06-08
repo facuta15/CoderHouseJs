@@ -32,7 +32,68 @@ const showMedic = ()=>{
   let medic = new Medico(document.getElementById("name").value,document.getElementById("year").value,document.getElementById("day").value,document.getElementById("room").value);
   console.log(medic);
 }
-
+let tablita = `<div id="table warp"> 
+<table class="table table-bordered text-center">
+    <thead>
+        <tr>
+            <th>Lunes</th>
+            <th>Martes</th>
+            <th>Miercoles</th>
+            <th>Jueves</th>
+            <th>Viernes</th>
+            <th>Sabado</th>
+            <th>Domingo</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Doctor</td>
+            <td>Doctor</td>
+            <td>Doctor</td>
+            <td>Doctor</td>
+            <td>Doctor</td>
+            <td>Doctor</td>
+            <td>Doctor</td>
+        </tr>
+        <tr>
+            <td>Doctor</td>
+            <td>Doctor</td>
+            <td>Doctor</td>
+            <td>Doctor</td>
+            <td>Doctor</td>
+            <td>Doctor</td>
+            <td>Doctor</td>
+        </tr>
+        <tr>
+            <td>Doctor</td>
+            <td>Doctor</td>
+            <td>Doctor</td>
+            <td>Doctor</td>
+            <td>Doctor</td>
+            <td>Doctor</td>
+            <td>Doctor</td>
+        </tr>
+        <tr>
+            <td>Doctor</td>
+            <td>Doctor</td>
+            <td>Doctor</td>
+            <td>Doctor</td>
+            <td>Doctor</td>
+            <td>Doctor</td>
+            <td>Doctor</td>
+        </tr>
+        <tr>
+            <td>Doctor</td>
+            <td>Doctor</td>
+            <td>Doctor</td>
+            <td>Doctor</td>
+            <td>Doctor</td>
+            <td>Doctor</td>
+            <td>Doctor</td>
+        </tr>
+    </tbody>
+</table>
+</div>`
 let formSelectMonthYear =`<div class="text-center py-3">
 <div class="item">
   <p>Ingrese el mes en el que se distribuira la guardia</p>
@@ -241,50 +302,80 @@ const getRandomMedic=(medicsArray)=>{
   let totalR3 = getAllR3(medicsArray).length;
   let totalR2 = getAllR2(medicsArray).length;
   let totalR1 = getAllR1(medicsArray).length;
-  // como verga sigo aca? 
   // if(){//si... si que? 
   //   getAllR3(medicsArray).findIndex(getRandomIntInclusive(0,totalR3));//me devuelve un medico random del array 
   // }
 }
 //filtrar el array ppal para tener uno con cada anio
 const getAllR3 =(medicsArray)=>{
-  let r3 = medicsArray.filter(obj =>{
-    return obj.year === 3;
+  let r3 =[]; 
+  r3 = medicsArray.filter(obj =>{
+    return obj.year === "R3";
   })
   return r3;
 }
 
 const getAllR2 =(medicsArray)=>{
-  let r2 = medicsArray.filter(obj =>{
-    return obj.year === 2;
+  let r2= [];
+  r2 = medicsArray.filter(obj =>{
+    return obj.year === "R2";
   })
   return r2;
 }
 
 const getAllR1 =(medicsArray)=>{
-  let r1 = medicsArray.filter(obj =>{
-    return obj.year === 1;
+  let r1=[]
+  r1 = medicsArray.filter(obj =>{
+    return obj.year === "R1";
   })
   return r1;
 }
 ////
 
 const asignMedicToDay=(day,medic)=>{
-  if(Medico(medic).year === 1){
+  if(Medico(medic).year === "R1"){
     Day(day).addR1(medic);
   }
-  else if(Medico(medic).year === 2){
+  else if(Medico(medic).year === "R2"){
     Day(day).addR2(medic);
   }
-  else if(Medico(medic).year === 3){
+  else if(Medico(medic).year === "R3"){
     Day(day).addR3(medic);
   }
 }
-//auxFn
-const toggleFlag=(e)=>{
-  e=1;
-}
 
+//tablas
+let tablaXd =`<table id="myTable" class="table table-borderless table-striped table-earning">
+<thead>
+  <tr>
+    <th>Dia</th>
+    <th>Medicos</th>
+  </tr>
+</thead>
+<tbody id="testBody"></tbody>
+</table>`
+
+
+function loadTableData(month) {
+  //esta fn tendria que crear una tabla con todos los dias y los medicos asignados a cada dia.
+  const table = document.getElementById("testBody");
+  month.forEach( day => {
+    //console.log("XD",day)
+    //inserta el numero de dia
+    let row = table.insertRow();
+    let number = row.insertCell(0);
+    number.innerHTML = day.number;
+    //inserta los medicos que hay de guardia ese dia
+   
+    let medic = row.insertCell(1);
+    let medicos = ""
+    // medicos += day.r1.map((medico) => medico.name); //queda de referencia
+    day.r1.forEach(element => {
+      medicos += element.name
+    });
+    medic.innerHTML = medicos//proximamente se creara una columna para cada R
+})}
+//
 //Execute
 
 addHtml(formFrontPage,"indexTarget")
@@ -298,20 +389,39 @@ const createMedics=(medicsTotal,currentIndex,medicsArray) =>{
   }
   else{
     console.log(medicsArray);
-    //se genera el mes como un contenedor de objetos
+    let allR1 = getAllR1(medicsArray);
+    console.log(allR1.at(0));
+
     //una vez cargados los medicos se pasa a seleccionar el mes
+    //se genera el mes como un contenedor de objetos
     addHtml(formSelectMonthYear,"indexTarget");
     let mesSelect = document.getElementById("selectedMonth").value
     let anioSelect =document.getElementById("selectedYear").value
     if(mesSelect === "-1" && anioSelect === "-1"){
         let month =[];
-        console.log(mesSelect);
-        document.getElementById("continueBtn").addEventListener("click",()=>generateMonth(document.getElementById("selectedMonth").value,document.getElementById("selectedYear").value,month));
-        console.log(month);
+        //cuando se clickea el boton, se pasa a la siguiente pantalla en la que se genera el mes y crea la tabla
+        document.getElementById("continueBtn").addEventListener("click",()=>{
+          generateMonth(document.getElementById("selectedMonth").value,document.getElementById("selectedYear").value,month)
+          month.forEach(day => {
+            day.addR1(allR1.at(0))
+          });
+          console.log(month)
+          addHtml(tablaXd,"indexTarget")
+          loadTableData(month)
+        }
+        );
+        
+        
+        
+        // if(month.length > 1){
+        //   console.log("pepito")
+        //   month.forEach(day => {
+        //     Day(day).addR1(allR1.at(0))
+        //   });
+        //   console.log("el mes con medicos es:")
+        //   console.log(month)
+        // }
     }
-    // month.forEach(day => {
-    //   Day(day).asignMedicToDay(day.number,)
-    // });
   }
     
 }
