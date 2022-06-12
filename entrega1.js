@@ -385,7 +385,18 @@ const createMedics=(medicsTotal,currentIndex,medicsArray) =>{
   let flag =0;
   if(Number(currentIndex) <= Number(medicsTotal)){
     addHtml(formCreateMedic,"indexTarget");//agrego el form
-    document.getElementById("saveBtn").addEventListener("click",()=>saveMedic(medicsArray,medicsTotal,currentIndex));//guardo el medic en el array
+    document.getElementById("saveBtn").addEventListener("click",()=>{
+      saveMedic(medicsArray,medicsTotal,currentIndex);//guardo el medic en el array
+      //se notifica al usuario para que sepa que lo que hizo se guardo
+      Toastify({
+        text: "Se ha guardado el medico ingresado",
+        className: "info",
+        style: {
+          background: "linear-gradient(to right, #00b09b, #96c93d)",
+        }
+      }).showToast();
+    })
+
   }
   else{
     console.log(medicsArray);
