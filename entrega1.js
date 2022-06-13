@@ -379,7 +379,16 @@ function loadTableData(month) {
 //Execute
 
 addHtml(formFrontPage,"indexTarget")
-document.getElementById("continueBtn").addEventListener("click",getMedicsTotal);
+document.getElementById("continueBtn").addEventListener("click",()=>{
+  Toastify({
+    text: "Se ha guardado la eleccion",
+    className: "info",
+    style: {
+      background: "linear-gradient(to right, #00b09b, #96c93d)",
+    }
+  }).showToast();
+  getMedicsTotal()
+});
 
 const createMedics=(medicsTotal,currentIndex,medicsArray) =>{
   let flag =0;
@@ -416,6 +425,13 @@ const createMedics=(medicsTotal,currentIndex,medicsArray) =>{
           month.forEach(day => {
             day.addR1(allR1.at(0))
           });
+          Toastify({
+            text: "Cambios guardados",
+            className: "info",
+            style: {
+              background: "linear-gradient(to right, #00b09b, #96c93d)",
+            }
+          }).showToast();
           console.log(month)
           addHtml(tablaXd,"indexTarget")
           loadTableData(month)
