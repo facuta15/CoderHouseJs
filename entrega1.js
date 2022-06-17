@@ -7,7 +7,7 @@ class Medico{
     this.onCallDays= 0;
   }
   giveOnCallDay =()=>{
-    this.onCallDays++;
+    this.onCallDays ++;
   }
 }
 class Day{
@@ -21,7 +21,7 @@ class Day{
     this.r1.push(medic)
   }
   addR2(medic){
-    this.r3.push(medic)
+    this.r2.push(medic)
   }
   addR3(medic){
     this.r3.push(medic)
@@ -32,68 +32,7 @@ const showMedic = ()=>{
   let medic = new Medico(document.getElementById("name").value,document.getElementById("year").value,document.getElementById("day").value,document.getElementById("room").value);
   console.log(medic);
 }
-let tablita = `<div id="table warp"> 
-<table class="table table-bordered text-center">
-    <thead>
-        <tr>
-            <th>Lunes</th>
-            <th>Martes</th>
-            <th>Miercoles</th>
-            <th>Jueves</th>
-            <th>Viernes</th>
-            <th>Sabado</th>
-            <th>Domingo</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Doctor</td>
-            <td>Doctor</td>
-            <td>Doctor</td>
-            <td>Doctor</td>
-            <td>Doctor</td>
-            <td>Doctor</td>
-            <td>Doctor</td>
-        </tr>
-        <tr>
-            <td>Doctor</td>
-            <td>Doctor</td>
-            <td>Doctor</td>
-            <td>Doctor</td>
-            <td>Doctor</td>
-            <td>Doctor</td>
-            <td>Doctor</td>
-        </tr>
-        <tr>
-            <td>Doctor</td>
-            <td>Doctor</td>
-            <td>Doctor</td>
-            <td>Doctor</td>
-            <td>Doctor</td>
-            <td>Doctor</td>
-            <td>Doctor</td>
-        </tr>
-        <tr>
-            <td>Doctor</td>
-            <td>Doctor</td>
-            <td>Doctor</td>
-            <td>Doctor</td>
-            <td>Doctor</td>
-            <td>Doctor</td>
-            <td>Doctor</td>
-        </tr>
-        <tr>
-            <td>Doctor</td>
-            <td>Doctor</td>
-            <td>Doctor</td>
-            <td>Doctor</td>
-            <td>Doctor</td>
-            <td>Doctor</td>
-            <td>Doctor</td>
-        </tr>
-    </tbody>
-</table>
-</div>`
+
 let formSelectMonthYear =`<div class="text-center py-3">
 <div class="item">
   <p>Ingrese el mes en el que se distribuira la guardia</p>
@@ -332,24 +271,14 @@ const getAllR1 =(medicsArray)=>{
 }
 ////
 
-const asignMedicToDay=(day,medic)=>{
-  if(Medico(medic).year === "R1"){
-    Day(day).addR1(medic);
-  }
-  else if(Medico(medic).year === "R2"){
-    Day(day).addR2(medic);
-  }
-  else if(Medico(medic).year === "R3"){
-    Day(day).addR3(medic);
-  }
-}
-
 //tablas
 let tablaXd =`<table id="myTable" class="table table-borderless table-striped table-earning">
 <thead>
   <tr>
     <th>Dia</th>
-    <th>Medicos</th>
+    <th>R1</th>
+    <th>R2</th>
+    <th>R3</th>
   </tr>
 </thead>
 <tbody id="testBody"></tbody>
@@ -367,18 +296,30 @@ function loadTableData(month) {
     number.innerHTML = day.number;
     //inserta los medicos que hay de guardia ese dia
    
-    let medic = row.insertCell(1);
-    let medicos = ""
-    // medicos += day.r1.map((medico) => medico.name); //queda de referencia
+    let r1Column = row.insertCell(1);
+    let medicoR1 = ""
     day.r1.forEach(element => {
-      medicos += element.name
+      medicoR1 += element.name
     });
-    medic.innerHTML = medicos//proximamente se creara una columna para cada R
+    r1Column.innerHTML = medicoR1//proximamente se creara una columna para cada R
+    let r2Column = row.insertCell(2);
+    let medicoR2 = ""
+    day.r2.forEach(element => {
+      medicoR2 += element.name
+    });
+    r2Column.innerHTML = medicoR2//proximamente se creara una columna para cada R
+    let r3Column = row.insertCell(3);
+    let medicoR3 = ""
+    day.r3.forEach(element => {
+      medicoR3 += element.name
+    });
+    r3Column.innerHTML = medicoR3//proximamente se creara una columna para cada R
+    
 })}
 //
 //Execute
 
-addHtml(formFrontPage,"indexTarget")
+addHtml(formFrontPage,"indexTarget")// 
 document.getElementById("continueBtn").addEventListener("click",()=>{
   Toastify({
     text: "Se ha guardado la eleccion",
@@ -408,9 +349,11 @@ const createMedics=(medicsTotal,currentIndex,medicsArray) =>{
 
   }
   else{
-    console.log(medicsArray);
+    // console.log(medicsArray);
     let allR1 = getAllR1(medicsArray);
-    console.log(allR1.at(0));
+    let allR2 = getAllR2(medicsArray);
+    let allR3 = getAllR3(medicsArray);
+    console.log(allR2.at(0));
 
     //una vez cargados los medicos se pasa a seleccionar el mes
     //se genera el mes como un contenedor de objetos
@@ -421,10 +364,6 @@ const createMedics=(medicsTotal,currentIndex,medicsArray) =>{
         let month =[];
         //cuando se clickea el boton, se pasa a la siguiente pantalla en la que se genera el mes y crea la tabla
         document.getElementById("continueBtn").addEventListener("click",()=>{
-          generateMonth(document.getElementById("selectedMonth").value,document.getElementById("selectedYear").value,month)
-          month.forEach(day => {
-            day.addR1(allR1.at(0))
-          });
           Toastify({
             text: "Cambios guardados",
             className: "info",
@@ -432,22 +371,47 @@ const createMedics=(medicsTotal,currentIndex,medicsArray) =>{
               background: "linear-gradient(to right, #00b09b, #96c93d)",
             }
           }).showToast();
+          generateMonth(document.getElementById("selectedMonth").value,document.getElementById("selectedYear").value,month)
+          let r1Index=0;
+          let r2Index=0;
+          let r3Index=0;
+          month.forEach(day => {
+            //agrega un r1 al dia 
+            if(r1Index === allR1.length){
+              r1Index = 0;
+              day.addR1(allR1.at(r1Index))
+            }
+            else{
+              day.addR1(allR1.at(r1Index))
+              r1Index++
+            }
+            //agrega un r2 al dia 
+            if(r2Index === allR2.length){
+              r2Index = 0;
+              day.addR2(allR2.at(r2Index))
+            }
+            else{
+              day.addR2(allR2.at(r2Index))
+              r2Index++
+            }
+            //agrega un r3 al dia 
+            if(r3Index === allR3.length){
+              r3Index = 0;
+              day.addR3(allR3.at(r3Index))
+            }
+            else{
+              day.addR3(allR3.at(r3Index))
+              r3Index++
+            }
+            
+            
+
+          });
           console.log(month)
           addHtml(tablaXd,"indexTarget")
           loadTableData(month)
         }
         );
-        
-        
-        
-        // if(month.length > 1){
-        //   console.log("pepito")
-        //   month.forEach(day => {
-        //     Day(day).addR1(allR1.at(0))
-        //   });
-        //   console.log("el mes con medicos es:")
-        //   console.log(month)
-        // }
     }
   }
     
