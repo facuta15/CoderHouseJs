@@ -32,6 +32,19 @@ const showMedic = ()=>{
   let medic = new Medico(document.getElementById("name").value,document.getElementById("year").value,document.getElementById("day").value,document.getElementById("room").value);
   console.log(medic);
 }
+//Htmls
+let homePage= `<div >
+<div class="text-center py-5">
+    <h2>Bienvenidos al armador de guardias automatico</h3>
+</div>
+<div class="text-center ">
+  <div class="testbox">
+        <h4>Desea cargar medicos creados previamente?</h2>       
+  </div >
+  <button id="loadStorage">Si</button>
+  <button id="continueBtn">No</button>
+</div>   
+</div>`
 
 let formSelectMonthYear =`<div class="text-center py-3">
 <div class="item">
@@ -187,7 +200,9 @@ let formSelectUnavailableDays=`<select id="day">
 <option value="30"> 30 </option>
 <option value="31"> 31 </option>
 </select>
-`;
+`
+//fin htmls
+
 //fn para generar el mes
 let daysInMonth = (month, year)=> {
   return new Date(year, month, 0).getDate();
@@ -317,61 +332,20 @@ function loadTableData(month) {
     
 })}
 //
-//Execute
-
-addHtml(formFrontPage,"indexTarget")// 
-document.getElementById("continueBtn").addEventListener("click",()=>{
-  Toastify({
-    text: "Se ha guardado la eleccion",
-    className: "info",
-    style: {
-      background: "linear-gradient(to right, #00b09b, #96c93d)",
-    }
-  }).showToast();
-  getMedicsTotal()
-});
-
-const createMedics=(medicsTotal,currentIndex,medicsArray) =>{
-  let flag =0;
-  if(Number(currentIndex) <= Number(medicsTotal)){
-    addHtml(formCreateMedic,"indexTarget");//agrego el form
-    document.getElementById("saveBtn").addEventListener("click",()=>{
-      saveMedic(medicsArray,medicsTotal,currentIndex);//guardo el medic en el array
-      //se notifica al usuario para que sepa que lo que hizo se guardo
-      Toastify({
-        text: "Se ha guardado el medico ingresado",
-        className: "info",
-        style: {
-          background: "linear-gradient(to right, #00b09b, #96c93d)",
-        }
-      }).showToast();
-    })
-
-  }
-  else{
-    // console.log(medicsArray);
-    let allR1 = getAllR1(medicsArray);
-    let allR2 = getAllR2(medicsArray);
-    let allR3 = getAllR3(medicsArray);
-    console.log(allR2.at(0));
-
-    //una vez cargados los medicos se pasa a seleccionar el mes
-    //se genera el mes como un contenedor de objetos
-    addHtml(formSelectMonthYear,"indexTarget");
-    let mesSelect = document.getElementById("selectedMonth").value
-    let anioSelect =document.getElementById("selectedYear").value
-    if(mesSelect === "-1" && anioSelect === "-1"){
-        let month =[];
-        //cuando se clickea el boton, se pasa a la siguiente pantalla en la que se genera el mes y crea la tabla
-        document.getElementById("continueBtn").addEventListener("click",()=>{
-          Toastify({
-            text: "Cambios guardados",
-            className: "info",
-            style: {
-              background: "linear-gradient(to right, #00b09b, #96c93d)",
-            }
-          }).showToast();
-          generateMonth(document.getElementById("selectedMonth").value,document.getElementById("selectedYear").value,month)
+let askMedicsToLoad=()=>{
+  addHtml(formFrontPage,"indexTarget")// 
+  document.getElementById("continueBtn").addEventListener("click",()=>{
+    Toastify({
+      text: "Se ha guardado la eleccion",
+      className: "info",
+      style: {
+        background: "linear-gradient(to right, #00b09b, #96c93d)",
+      }
+    }).showToast();
+    getMedicsTotal()
+  });
+}
+let addMedicsToDay=(month,allR1,allR2,allR3)=>{
           let r1Index=0;
           let r2Index=0;
           let r3Index=0;
@@ -403,10 +377,92 @@ const createMedics=(medicsTotal,currentIndex,medicsArray) =>{
               day.addR3(allR3.at(r3Index))
               r3Index++
             }
-            
-            
+          })
+}
+//Execute
 
-          });
+//aca tiene que venir el home page
+addHtml(homePage,"indexTarget")
+document.getElementById("continueBtn").addEventListener("click",()=>{
+  askMedicsToLoad();
+})
+document.getElementById("loadStorage").addEventListener("click",()=>{
+  let medicsInStorage = localStorage.getItem('medics');
+  let storedMedicsArray = JSON.parse(medicsInStorage)
+  let allR1 = getAllR1(storedMedicsArray);
+    let allR2 = getAllR2(storedMedicsArray);
+    let allR3 = getAllR3(storedMedicsArray);
+
+    //una vez cargados los medicos se pasa a seleccionar el mes
+    //se genera el mes como un contenedor de objetos
+    addHtml(formSelectMonthYear,"indexTarget");
+    let mesSelect = document.getElementById("selectedMonth").value
+    let anioSelect =document.getElementById("selectedYear").value
+    if(mesSelect === "-1" && anioSelect === "-1"){
+        let month =[];
+        //cuando se clickea el boton, se pasa a la siguiente pantalla en la que se genera el mes y crea la tabla
+        document.getElementById("continueBtn").addEventListener("click",()=>{
+          Toastify({
+            text: "Cambios guardados",
+            className: "info",
+            style: {
+              background: "linear-gradient(to right, #00b09b, #96c93d)",
+            }
+          }).showToast();
+          generateMonth(document.getElementById("selectedMonth").value,document.getElementById("selectedYear").value,month)
+          addMedicsToDay(month,allR1,allR2,allR3)
+          console.log(month)
+          addHtml(tablaXd,"indexTarget")
+          loadTableData(month)
+        }
+        );
+    }
+})
+
+
+
+const createMedics=(medicsTotal,currentIndex,medicsArray) =>{
+  let flag =0;
+  if(Number(currentIndex) <= Number(medicsTotal)){
+    addHtml(formCreateMedic,"indexTarget");//agrego el form
+    document.getElementById("saveBtn").addEventListener("click",()=>{
+      saveMedic(medicsArray,medicsTotal,currentIndex);//guardo el medic en el array
+      //se notifica al usuario para que sepa que lo que hizo se guardo
+      Toastify({
+        text: "Se ha guardado el medico ingresado",
+        className: "info",
+        style: {
+          background: "linear-gradient(to right, #00b09b, #96c93d)",
+        }
+      }).showToast();
+    })
+
+  }
+  else{
+    localStorage.setItem('medics',JSON.stringify(medicsArray));
+    // console.log(medicsArray);
+    let allR1 = getAllR1(medicsArray);
+    let allR2 = getAllR2(medicsArray);
+    let allR3 = getAllR3(medicsArray);
+
+    //una vez cargados los medicos se pasa a seleccionar el mes
+    //se genera el mes como un contenedor de objetos
+    addHtml(formSelectMonthYear,"indexTarget");
+    let mesSelect = document.getElementById("selectedMonth").value
+    let anioSelect =document.getElementById("selectedYear").value
+    if(mesSelect === "-1" && anioSelect === "-1"){
+        let month =[];
+        //cuando se clickea el boton, se pasa a la siguiente pantalla en la que se genera el mes y crea la tabla
+        document.getElementById("continueBtn").addEventListener("click",()=>{
+          Toastify({
+            text: "Cambios guardados",
+            className: "info",
+            style: {
+              background: "linear-gradient(to right, #00b09b, #96c93d)",
+            }
+          }).showToast();
+          generateMonth(document.getElementById("selectedMonth").value,document.getElementById("selectedYear").value,month)
+          addMedicsToDay(month,allR1,allR2,allR3)
           console.log(month)
           addHtml(tablaXd,"indexTarget")
           loadTableData(month)
