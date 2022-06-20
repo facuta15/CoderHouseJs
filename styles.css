@@ -10,6 +10,9 @@ html, body {
     color: #666;
     line-height: 22px;
     }
+    img{
+        width: 200px;
+    }
     h1 {
     position: absolute;
     margin: 0;

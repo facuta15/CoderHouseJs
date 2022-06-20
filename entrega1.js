@@ -43,7 +43,13 @@ let homePage= `<div >
   </div >
   <button id="loadStorage">Si</button>
   <button id="continueBtn">No</button>
-</div>   
+  <div id ="imgResult" class="py-5" >
+      <p>Tuviste un mal dia? </p>
+  </div>
+</div> 
+    <div class="text-center py-2">
+        <button id="randomImgBtn">Hace click aca</button>
+    </div>  
 </div>`
 
 let formSelectMonthYear =`<div class="text-center py-3">
@@ -74,15 +80,16 @@ let formSelectMonthYear =`<div class="text-center py-3">
     <option value="2024">2024</option>
     <option value="2025">2025</option>
   </select>
+</div class="text-center py-3>
+<div class="text-center py-3">
+<button id="continueBtn">Continuar</button>
 </div>
-<button id="continueBtn">Continuar</button> 
 </div>`
 
 let formFrontPage =`
 <div >
     <div class="text-center py-3">
         <h3>Bienvenidos al armador de guardias automatico</h3>
-        <p>por ahora veran las cosas en la consola</p>
     </div>
     <div>
       <div class="testbox">
@@ -95,7 +102,9 @@ let formFrontPage =`
       </div>
     </div>   
 </div>
-<button id="continueBtn">Continuar</button>`;
+<div class="text-center py-3">
+<button id="continueBtn">Continuar</button>
+</div>`;
 
 let formCreateMedic = `<form>
 <div class="banner">
@@ -164,7 +173,10 @@ let formCreateMedic = `<form>
   <p>Chequee que los datos cargados son los correctos</p>
 </div>
 </form>
-<button id="saveBtn">Guardar</button>
+<div class="text-center py-3">
+  <button id="saveBtn">Guardar</button>
+</div>
+
 `;
 let formSelectUnavailableDays=`<select id="day">
 <option selected value="" disabled selected></option>
@@ -202,7 +214,16 @@ let formSelectUnavailableDays=`<select id="day">
 </select>
 `
 //fin htmls
+//API fetch randomPic
 
+let getRandomImg= ()=>{
+    fetch('https://random.dog/woof.json')
+    .then(res => res.json())
+    .then(data =>{
+      document.getElementById('imgResult').innerHTML = `<img src="${data.url}">`
+    })
+}
+//
 //fn para generar el mes
 let daysInMonth = (month, year)=> {
   return new Date(year, month, 0).getDate();
@@ -379,47 +400,6 @@ let addMedicsToDay=(month,allR1,allR2,allR3)=>{
             }
           })
 }
-//Execute
-
-//aca tiene que venir el home page
-addHtml(homePage,"indexTarget")
-document.getElementById("continueBtn").addEventListener("click",()=>{
-  askMedicsToLoad();
-})
-document.getElementById("loadStorage").addEventListener("click",()=>{
-  let medicsInStorage = localStorage.getItem('medics');
-  let storedMedicsArray = JSON.parse(medicsInStorage)
-  let allR1 = getAllR1(storedMedicsArray);
-    let allR2 = getAllR2(storedMedicsArray);
-    let allR3 = getAllR3(storedMedicsArray);
-
-    //una vez cargados los medicos se pasa a seleccionar el mes
-    //se genera el mes como un contenedor de objetos
-    addHtml(formSelectMonthYear,"indexTarget");
-    let mesSelect = document.getElementById("selectedMonth").value
-    let anioSelect =document.getElementById("selectedYear").value
-    if(mesSelect === "-1" && anioSelect === "-1"){
-        let month =[];
-        //cuando se clickea el boton, se pasa a la siguiente pantalla en la que se genera el mes y crea la tabla
-        document.getElementById("continueBtn").addEventListener("click",()=>{
-          Toastify({
-            text: "Cambios guardados",
-            className: "info",
-            style: {
-              background: "linear-gradient(to right, #00b09b, #96c93d)",
-            }
-          }).showToast();
-          generateMonth(document.getElementById("selectedMonth").value,document.getElementById("selectedYear").value,month)
-          addMedicsToDay(month,allR1,allR2,allR3)
-          console.log(month)
-          addHtml(tablaXd,"indexTarget")
-          loadTableData(month)
-        }
-        );
-    }
-})
-
-
 
 const createMedics=(medicsTotal,currentIndex,medicsArray) =>{
   let flag =0;
@@ -440,7 +420,6 @@ const createMedics=(medicsTotal,currentIndex,medicsArray) =>{
   }
   else{
     localStorage.setItem('medics',JSON.stringify(medicsArray));
-    // console.log(medicsArray);
     let allR1 = getAllR1(medicsArray);
     let allR2 = getAllR2(medicsArray);
     let allR3 = getAllR3(medicsArray);
@@ -463,7 +442,6 @@ const createMedics=(medicsTotal,currentIndex,medicsArray) =>{
           }).showToast();
           generateMonth(document.getElementById("selectedMonth").value,document.getElementById("selectedYear").value,month)
           addMedicsToDay(month,allR1,allR2,allR3)
-          console.log(month)
           addHtml(tablaXd,"indexTarget")
           loadTableData(month)
         }
@@ -472,6 +450,53 @@ const createMedics=(medicsTotal,currentIndex,medicsArray) =>{
   }
     
 }
+
+//Execute
+
+//Primero se muestra la eleccion de ingresar medicos de 0 o cargar desde el local storage 
+addHtml(homePage,"indexTarget")
+document.getElementById("randomImgBtn").addEventListener('click',getRandomImg)
+document.getElementById("continueBtn").addEventListener("click",()=>{
+  //cuando se clickea en "NO" el programa continua normalmente
+  askMedicsToLoad();
+})
+document.getElementById("loadStorage").addEventListener("click",()=>{
+  //cuando se clickea en "SI" se leen los datos del LocalStorage ahorrando la entrada de datos
+  let medicsInStorage = localStorage.getItem('medics');
+  let storedMedicsArray = JSON.parse(medicsInStorage)
+  let allR1 = getAllR1(storedMedicsArray);
+  let allR2 = getAllR2(storedMedicsArray);
+  let allR3 = getAllR3(storedMedicsArray);
+
+    //una vez cargados los medicos se pasa a seleccionar el mes
+    //se genera el mes como un contenedor de objetos
+    addHtml(formSelectMonthYear,"indexTarget");
+    let mesSelect = document.getElementById("selectedMonth").value
+    let anioSelect =document.getElementById("selectedYear").value
+    if(mesSelect === "-1" && anioSelect === "-1"){
+        let month =[];
+        //cuando se clickea el boton, se pasa a la siguiente pantalla en la que se genera el mes y crea la tabla
+        document.getElementById("continueBtn").addEventListener("click",()=>{
+          Toastify({
+            text: "Cambios guardados",
+            className: "info",
+            style: {
+              background: "linear-gradient(to right, #00b09b, #96c93d)",
+            }
+          }).showToast();
+          generateMonth(document.getElementById("selectedMonth").value,document.getElementById("selectedYear").value,month)
+          addMedicsToDay(month,allR1,allR2,allR3)
+          console.log(month)
+          addHtml(tablaXd,"indexTarget")
+          loadTableData(month)
+        }
+        );
+    }
+})
+
+
+
+
   
 
 
